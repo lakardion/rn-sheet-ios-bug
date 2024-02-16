@@ -1,49 +1,67 @@
 import { useRef } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
+import ActionSheet, {
+  ActionSheetRef,
+  SheetManager,
+  SheetProvider,
+  registerSheet,
+} from "react-native-actions-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-export default function App() {
-  const actionSheetRef = useRef<ActionSheetRef>(null);
+const AppInner = () => {
   return (
-    <>
-      <View style={styles.container}>
-        <View>
-          <Button
-            title="Open sheet"
-            onPress={() => {
-              actionSheetRef.current?.show();
-            }}
-          />
-          <View
-            style={{
-              paddingTop: 30,
-            }}
-          >
-            <Button
-              title="Close Sheet"
-              onPress={() => {
-                actionSheetRef.current?.hide();
-              }}
-            />
-          </View>
-        </View>
-      </View>
-      <ActionSheet
-        useBottomSafeAreaPadding
-        gestureEnabled={true}
-        defaultOverlayOpacity={0.3}
-        backgroundInteractionEnabled={true}
-        ref={actionSheetRef}
-      >
+    <View style={styles.container}>
+      <View>
+        <Button
+          title="Open sheet"
+          onPress={() => {
+            SheetManager.show("test");
+          }}
+        />
         <View
           style={{
-            height: 100,
+            paddingTop: 30,
           }}
         >
-          <Text>Hello from Sheet</Text>
+          <Button
+            title="Close Sheet"
+            onPress={() => {
+              SheetManager.hide("test");
+            }}
+          />
         </View>
-      </ActionSheet>
-    </>
+      </View>
+    </View>
+  );
+};
+
+const TestSheet = () => {
+  return (
+    <ActionSheet isModal={false} backgroundInteractionEnabled={true}>
+      <View
+        style={{
+          height: 100,
+        }}
+      >
+        <Text>Hello from Sheet</Text>
+      </View>
+    </ActionSheet>
+  );
+};
+
+registerSheet("test", TestSheet);
+
+export default function App() {
+  return (
+    <GestureHandlerRootView
+      style={{
+        flex: 1,
+      }}
+    >
+      <SheetProvider context="global">
+        <AppInner />
+      </SheetProvider>
+    </GestureHandlerRootView>
   );
 }
 
